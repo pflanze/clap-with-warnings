@@ -4,6 +4,8 @@ version = "0.1.0"
 edition = "2021"
 authors = ["Christian Jaeger <ch@christianjaeger.ch>"]
 license = "MIT OR Apache-2.0"
+description = "Retain unused field warnings when using Clap"
+repository = "https://github.com/pflanze/clap-with-warnings"
 
 [lib]
 proc-macro = true
