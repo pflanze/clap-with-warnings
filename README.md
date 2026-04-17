@@ -13,7 +13,7 @@ macros (at least `clap::Parser`) generate code that sets the field
 this way (more precisely, via `&mut foo.field`, which also silences
 the warning).
 
-The macro offered by this crate generats two versions of the struct:
+The macro offered by this crate generates two versions of the struct:
 one with `WithoutWarnings` appended to its name, but with the clap
 derives and everything else included. And a second struct with the
 original name, but all traces of clap removed. It also adds a method
