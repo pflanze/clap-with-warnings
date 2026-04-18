@@ -1,6 +1,6 @@
 [package]
 name = "clap-with-warnings"
-version = "0.1.2"
+version = "0.1.3"
 edition = "2021"
 authors = ["Christian Jaeger <ch@christianjaeger.ch>"]
 license = "MIT OR Apache-2.0"
