@@ -1,4 +1,3 @@
-use clap::Parser;
 use clap_with_warnings::clap_with_warnings;
 
 #[clap_with_warnings]

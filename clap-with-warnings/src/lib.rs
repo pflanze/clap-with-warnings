@@ -196,6 +196,7 @@ pub fn clap_with_warnings(attr: TokenStream, input: TokenStream) -> TokenStream 
 
             impl #original_ident {
                 pub fn parse() -> #original_ident {
+                    use ::clap::Parser;
                     #without_warnings_ident :: parse().with_warnings()
                 }
             }
