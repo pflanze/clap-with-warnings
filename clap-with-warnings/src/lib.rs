@@ -74,8 +74,12 @@ pub fn clap_with_warnings(attr: TokenStream, input: TokenStream) -> TokenStream 
 
         let mut clap_attrs: Vec<Attribute> = Vec::new();
         let mut other_attrs: Vec<Attribute> = Vec::new();
+
+        let mut derive_attr = None;
+
         for attr in &input.attrs {
             if attr.path().is_ident("derive") {
+                derive_attr = Some(attr);
                 if let Meta::List(list) = &attr.meta {
                     list.parse_nested_meta(|meta| {
                         let path = meta.path;
@@ -109,6 +113,21 @@ pub fn clap_with_warnings(attr: TokenStream, input: TokenStream) -> TokenStream 
 
             eprintln!("clap_attrs={:?}", DisplayDebugMultiple::from(&clap_attrs));
             eprintln!("other_attrs={:?}", DisplayDebugMultiple::from(&other_attrs));
+        }
+
+        if clap_derives.is_empty() {
+            if let Some(derive_attr) = derive_attr {
+                return Err(syn::Error::new_spanned(
+                    derive_attr,
+                    "expecting at least one derive item with an explicit `clap::` namespace",
+                ));
+            } else {
+                return Err(syn::Error::new_spanned(
+                    derive_attr,
+                    "expecting a `derive` attribute with at least one item with an \
+                     explicit `clap::` namespace",
+                ));
+            }
         }
 
         // Rebuild the struct with clap::* derives and #[clap(...)]
