@@ -17,11 +17,11 @@ fn is_crate(path: &Path, crate_name: &str) -> bool {
 fn field_defs_from_named_keeping_clap(
     named: &FieldsNamed,
     keep_clap_attributes: bool,
-) -> syn::Result<Vec<proc_macro2::TokenStream>> {
+) -> impl Iterator<Item = proc_macro2::TokenStream> + use<'_> {
     named
         .named
         .iter()
-        .map(move |f| -> syn::Result<proc_macro2::TokenStream> {
+        .map(move |f| -> proc_macro2::TokenStream {
             // `attrs` are the attributes on a field definition
             fn field_def<'t>(
                 f: &'t Field,
@@ -36,13 +36,12 @@ fn field_defs_from_named_keeping_clap(
                 }
             }
             if keep_clap_attributes {
-                Ok(field_def(f, f.attrs.iter()))
+                field_def(f, f.attrs.iter())
             } else {
                 let nonclap_attrs = f.attrs.iter().filter(|a| !a.path().is_ident("clap"));
-                Ok(field_def(f, nonclap_attrs))
+                field_def(f, nonclap_attrs)
             }
         })
-        .collect()
 }
 
 const DEBUG: bool = false;
@@ -119,7 +118,7 @@ pub fn clap_with_warnings(attr: TokenStream, input: TokenStream) -> TokenStream 
         let without_warnings_struct = match &input.data {
             Data::Struct(s) => match &s.fields {
                 Fields::Named(named) => {
-                    let field_defs = field_defs_from_named_keeping_clap(named, true)?;
+                    let field_defs = field_defs_from_named_keeping_clap(named, true);
 
                     quote! {
                         #[derive(#(#base_derives),*, #(#clap_derives),*)]
@@ -140,7 +139,7 @@ pub fn clap_with_warnings(attr: TokenStream, input: TokenStream) -> TokenStream 
         let derived = match &input.data {
             Data::Struct(s) => match &s.fields {
                 Fields::Named(named) => {
-                    let field_defs = field_defs_from_named_keeping_clap(named, false)?;
+                    let field_defs = field_defs_from_named_keeping_clap(named, false);
 
                     let field_names = named.named.iter().map(|f| {
                         let ident = &f.ident;
